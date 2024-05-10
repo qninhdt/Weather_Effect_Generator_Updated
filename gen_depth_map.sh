@@ -1,4 +1,4 @@
 python MiDaS_Depth_Estimation.py \
-    --img_path ./clear_images \
-    --save_folder ./depth_maps \
+    --img_path ./data/images \
+    --save_folder ./data/depth_maps \
     --use_cuda

@@ -157,10 +157,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-clear_images
-rain_images
-snow_images
-rain_gan
 checkpoints
-depth_maps
 DAWN
