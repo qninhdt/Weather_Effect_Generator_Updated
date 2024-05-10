@@ -93,6 +93,9 @@ class RainEffectGenerator:
         I = np.array(Image.open(img_path))
         D = np.load(depth_path)
 
+        return self.genEffect_(I, D)
+
+    def genEffect_(self, I, D):
         hI, wI, _ = I.shape
         hD, wD = D.shape
 

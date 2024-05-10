@@ -57,6 +57,25 @@ def getDisparityMap(model, transform, img_path):
     return prediction.cpu().numpy()
 
 
+def get_depth_map(
+    midas, midas_transform, imgp, baseline=0.54, focal=721.09, img_scale=1
+):
+    disp = getDisparityMap(midas, midas_transform, imgp)
+    disp[disp < 0] = 0
+    disp = disp + 1e-3
+    depth = baseline * focal / (disp * img_scale)
+
+    return depth
+
+
+def get_depth_map_new(midas, midas_transform, imgp):
+    depth = getDisparityMap(midas, midas_transform, imgp)
+    depth[depth < 0] = 0
+    depth = depth + 1e-3
+    depth = depth
+    return depth.max() - depth
+
+
 def main():
     args = parse_arguments()
 
@@ -78,20 +97,12 @@ def main():
         model_name=args.midas_model, device=device
     )
 
-    if imgP.is_file():
-        disp = getDisparityMap(midas, midas_transform, imgP)
-        disp[disp < 0] = 0
-        disp = disp + 1e-3
-        depth = baseline * focal / (disp * img_scale)
-        np.save(save_folder / imgP.stem, depth)
-
     if imgP.is_dir():
         image_files = sorted(Path(imgP).glob("*"))
         for imgp in tqdm(image_files):
-            disp = getDisparityMap(midas, midas_transform, imgp)
-            disp[disp < 0] = 0
-            disp = disp + 1e-3
-            depth = baseline * focal / (disp * img_scale)
+            depth = get_depth_map(
+                midas, midas_transform, imgp, baseline, focal, img_scale
+            )
             np.save(save_folder / imgp.stem, depth)
 
 
