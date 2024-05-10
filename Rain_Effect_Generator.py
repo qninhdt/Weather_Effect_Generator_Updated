@@ -99,7 +99,7 @@ class RainEffectGenerator:
         if hI != hD or wI != wD:
             D = scale_depth(D, hI, wI)
 
-        T = self.getIlluminationMapCheat(I)
+        T = self.getIlluminationMap(I)
         illumination_array = np.histogram(T, bins=4, range=(0, 1))[0] / (T.size)
         illumination = illumination_array.argmax()
 
@@ -162,7 +162,7 @@ def main():
 
         for imgp, depthp in tqdm(zip(image_files, depth_files), total=len(image_files)):
             rainy = raingen.genEffect(imgp, depthp)
-            Image.fromarray(rainy).save(save_folder / (imgp.stem + "-rsyn.jpg"))
+            Image.fromarray(rainy).save(save_folder / (imgp.stem + ".jpg"))
 
 
 if __name__ == "__main__":

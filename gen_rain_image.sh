@@ -1,4 +1,4 @@
 python Rain_Effect_Generator.py \
-    --clear_path ./clear_images \
-    --depth_path ./depth_maps \
-    --save_folder ./rain_images
+    --clear_path ./data/images \
+    --depth_path ./data/depth_maps \
+    --save_folder ./data/analyticity/rain_images
