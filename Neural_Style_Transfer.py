@@ -114,7 +114,7 @@ def main():
             content_weight=args.content_weight,
             device=device,
         )
-        output_img.save(save_folder / f"{name}-{args.ext}.{extension}")
+        output_img.save(save_folder / f"{name}.{extension}")
 
 
 if __name__ == "__main__":
