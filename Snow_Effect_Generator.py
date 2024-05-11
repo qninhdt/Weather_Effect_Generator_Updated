@@ -171,7 +171,7 @@ def main():
 
         for imgp, depthp in tqdm(zip(image_files, depth_files), total=len(image_files)):
             snowy = snowgen.genEffect(imgp, depthp)
-            Image.fromarray(snowy).save(save_folder / (imgp.stem + "-ssyn.jpg"))
+            Image.fromarray(snowy).save(save_folder / (imgp.stem + ".jpg"))
 
 
 if __name__ == "__main__":
