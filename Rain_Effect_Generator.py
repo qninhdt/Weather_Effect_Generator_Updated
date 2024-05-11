@@ -33,11 +33,12 @@ def parse_arguments():
     )
     parser.add_argument("--txt_file", default=None, help="path to the folder")
     parser.add_argument("--show", action="store_true")
+    parser.add_argument("--fog", action="store_true")
     return parser.parse_args()
 
 
 class RainEffectGenerator:
-    def __init__(self):
+    def __init__(self, fog=True):
         self._lime = LIME(iterations=25, alpha=1.0)
         # self._illumination2darkness = {0: 1, 1: 0.75, 2: 0.65, 3: 0.5}
         self._illumination2darkness = {0: 1, 1: 0.95, 2: 0.85, 3: 0.8}
@@ -51,6 +52,7 @@ class RainEffectGenerator:
             3: (200, 240),
         }
         self._rain_layer_gen = RainGenUsingNoise()
+        self._fog = fog
 
     def getIlluminationMap(self, img: np.ndarray) -> np.ndarray:
         self._lime.load(img)
@@ -106,26 +108,29 @@ class RainEffectGenerator:
         illumination_array = np.histogram(T, bins=4, range=(0, 1))[0] / (T.size)
         illumination = illumination_array.argmax()
 
-        if illumination > 0:
-            visibility = visibility = random.randint(
-                self._weather2visibility[0], self._weather2visibility[1]
-            )
-            fog_color = random.randint(
-                self._illumination2fogcolor[illumination][0],
-                self._illumination2fogcolor[illumination][1],
-            )
-            I_dark = reduce_lightHSV(
-                I,
-                sat_red=self._illumination2darkness[illumination],
-                val_red=self._illumination2darkness[illumination],
-            )
-            I_fog = fogAttenuation(
-                I_dark, D, visibility=visibility, fog_color=fog_color
-            )
+        if self._fog:
+            if illumination > 0:
+                visibility = visibility = random.randint(
+                    self._weather2visibility[0], self._weather2visibility[1]
+                )
+                fog_color = random.randint(
+                    self._illumination2fogcolor[illumination][0],
+                    self._illumination2fogcolor[illumination][1],
+                )
+                I_dark = reduce_lightHSV(
+                    I,
+                    sat_red=self._illumination2darkness[illumination],
+                    val_red=self._illumination2darkness[illumination],
+                )
+                I_fog = fogAttenuation(
+                    I_dark, D, visibility=visibility, fog_color=fog_color
+                )
+            else:
+                fog_color = 75
+                visibility = D.max() * 0.75 if D.max() < 1000 else 750
+                I_fog = fogAttenuation(I, D, visibility=visibility, fog_color=fog_color)
         else:
-            fog_color = 75
-            visibility = D.max() * 0.75 if D.max() < 1000 else 750
-            I_fog = fogAttenuation(I, D, visibility=visibility, fog_color=fog_color)
+            I_fog = I
 
         alpha = illumination2opacity(I, illumination) * random.uniform(0.3, 0.5)
         rain_layer = self.genRainLayer(h=hI, w=wI)
@@ -135,7 +140,7 @@ class RainEffectGenerator:
 
 def main():
     args = parse_arguments()
-    raingen = RainEffectGenerator()
+    raingen = RainEffectGenerator(fog=args.fog)
 
     clearP = Path(args.clear_path)
     depthP = Path(args.depth_path)
