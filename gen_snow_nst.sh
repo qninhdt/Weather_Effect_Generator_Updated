@@ -5,4 +5,5 @@ python Neural_Style_Transfer.py \
     --vgg ./checkpoints/snow_vgg_512 \
     --min-step 100 \
     --max-step 200 \
+    --style-weight 10 \
     --cuda
