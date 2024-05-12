@@ -84,7 +84,7 @@ def transfer_style(
 def main():
     args = parse_arguments()
     if args.cuda and torch.cuda.is_available():
-        device = torch.device("cuda")
+        device = torch.device("cuda:0")
     else:
         device = torch.device("cpu")
 
@@ -100,9 +100,9 @@ def main():
         print(f"Creating {args.save_folder}")
         os.makedirs(str(save_folder))
 
-    for cimg in content_images:
+    for i, cimg in enumerate(content_images):
         name, extension = cimg.name.split(".")
-        simg = random.choice(style_images)
+        simg = style_images[i % len(style_images)]
 
         output_img = transfer_style(
             cnn_path=args.vgg,
